@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>OCR UPLOAD</h1>
+<form action="/ocr" method="post" enctype="multipart/form-data">
+    <input type="file" name="img">
+    <input type="submit" value="upload">
+</form>
+{% endblock %}
