@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, Markup
 from flask_sqlalchemy import SQLAlchemy
 
 import easyocr
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 import matplotlib.patches as patches
-import japanize_matplotlib
+from markdown import markdown
 
 app = Flask(__name__, static_folder='./static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ocr.db'
@@ -30,7 +30,7 @@ def index():
     else:
         return redirect('/')
 
-@app.route('/ocr',methods=['GET','POST'])
+@app.route('/ocr',methods=['GET'])
 def ocr():
     if request.method == 'GET':
         return render_template('ocr.html')
@@ -39,6 +39,16 @@ def ocr():
         file.save(os.path.join('static','img', file.filename)) # ファイル保存
         result = detect(file.filename)
         return render_template('result.html', filename=file.filename, result = result)
+    
+
+@app.route('/presentation',methods=['GET','POST'])
+def presentation():
+    if request.method == 'GET':
+        # print(md.convert(sample_text))
+        with open('./md/presentation.md', 'r', encoding='utf-8') as file:
+            text = file.read()
+        md = Markup(markdown(text))
+        return render_template('md.html', md=md)
 
 def detect(filename:str):
     """
